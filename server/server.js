@@ -3,6 +3,26 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var config = require('./config');
+const admin = require('firebase-admin');
+
+var serviceAccount = require('./poc-nodejs-222721-a9138594f67a.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+var db = admin.firestore();
+
+db.collection('mensagens').get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        console.log(doc.id, '=>', doc.data());
+      });
+    })
+    .catch((err) => {
+      console.log('Error getting documents', err);
+    });
+
 
 http.listen(config.port, function(){
   console.log('listening on *:' + config.port);
@@ -41,6 +61,14 @@ io.on('connection', function(socket){
 			io.emit('add user', msg);
 		}else{
 			io.emit('chat message', msg);
+
+			var docRef = db.collection('mensagens').doc('teste');
+
+			var setAda = docRef.set({
+			  emissor: 'POC NODE JS',
+			  mensagem: msg,
+			  data_envio: new Date()
+			});
 		}
 
 	});

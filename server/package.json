@@ -4,6 +4,7 @@
   "description": "socket.io app",
   "dependencies": {
     "express": "^4.16.4",
+    "firebase-admin": "^6.1.0",
     "socket.io": "^2.1.1"
   }
 }
